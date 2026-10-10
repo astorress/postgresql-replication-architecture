@@ -1,0 +1,59 @@
+# Replicación por streaming: tres nodos PostgreSQL con la misma copia de los datos.
+#   pg1 -> PRIMARY inicial (initdb)
+#   pg2, pg3 -> STANDBY: se clonan de pg1 con pg_basebackup y reciben su WAL en tiempo real
+# Cada nodo se publica en su propio puerto del host (5441-5443) para abrirlo con un cliente gráfico.
+
+x-postgres: &postgres
+  image: postgres:18.4
+  restart: unless-stopped
+  entrypoint: ["bash", "/replication/node.sh"]
+  env_file:
+    - ../.envs/postgres-nodes.env
+  healthcheck:
+    test: ["CMD", "pg_isready", "-h", "127.0.0.1", "-U", "postgres", "-q"]
+    interval: 5s
+    timeout: 5s
+    retries: 30
+
+services:
+
+  pg1:
+    <<: *postgres
+    container_name: 'PgNode1'
+    environment:
+      NODE_NAME: pg1
+    ports:
+      - 5441:5432
+    volumes:
+      - ./replication:/replication:ro
+      - ./replication/initdb:/docker-entrypoint-initdb.d:ro   # solo el primary inicial ejecuta initdb
+      - pg1-data:/var/lib/postgresql
+  pg2:
+    <<: *postgres
+    container_name: 'PgNode2'
+    environment:
+      NODE_NAME: pg2
+    ports:
+      - 5442:5432
+    volumes:
+      - ./replication:/replication:ro
+      - pg2-data:/var/lib/postgresql
+    depends_on:
+      pg1: { condition: service_healthy }
+  pg3:
+    <<: *postgres
+    container_name: 'PgNode3'
+    environment:
+      NODE_NAME: pg3
+    ports:
+      - 5443:5432
+    volumes:
+      - ./replication:/replication:ro
+      - pg3-data:/var/lib/postgresql
+    depends_on:
+      pg1: { condition: service_healthy }
+
+volumes:
+  pg1-data:
+  pg2-data:
+  pg3-data:

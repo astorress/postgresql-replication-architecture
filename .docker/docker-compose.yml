@@ -1,0 +1,28 @@
+name: postgresql-replication
+
+services:
+
+  postgresql_lab:
+    container_name: 'PgReplicaLab'
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: img-lab
+    volumes:
+      - ..:/app
+      - postgresql-replication-bashhistory:/commandhistory
+    env_file:
+      - ../.envs/postgres.env
+    # JupyterLab for notebooks/sandbox.ipynb when not using VS Code (see README).
+    # 8889 instead of 8888 so it can run alongside the mongodb-vector-embeddings lab.
+    ports:
+      - 8889:8889
+    working_dir: /app
+    restart: unless-stopped
+    command:
+      - /bin/sh
+      - -c
+      - sleep infinity
+
+volumes:
+  postgresql-replication-bashhistory:

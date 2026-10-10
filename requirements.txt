@@ -1,0 +1,7 @@
+psycopg==3.3.6
+psycopg-binary==3.3.6
+# notebooks/sandbox.ipynb
+jupyterlab==4.6.4
+ipykernel==7.4.0
+pandas==3.0.6
+matplotlib==3.11.2
