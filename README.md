@@ -4,8 +4,8 @@ Proyecto para entender cómo funciona la **replicación por streaming de Postgre
 los datos (un PRIMARY y dos STANDBY), failover manual sin detener la aplicación y una aplicación en Python
 (`psycopg`) que escribe, lee, consulta y agrega datos sobre una sola tabla (`employees`).
 
-Es el equivalente en PostgreSQL de [mongodb-replication-architecture](https://github.com/astorress/mongodb-replication-architecture),
-con las mismas lecciones adaptadas, y deja claras las diferencias entre ambos modelos.
+A lo largo de las lecciones se compara con el modelo de replica set de MongoDB para dejar claro qué resuelve
+PostgreSQL de forma nativa y qué delega en herramientas externas.
 
 ![Arquitectura de la replicación](docs/architecture.png)
 
@@ -117,7 +117,7 @@ hasta que alguien promueve uno (`pg_promote()`).
 
 En producción esto lo hace una herramienta externa: **Patroni** (con etcd, Consul o Kubernetes como fuente de
 verdad), **repmgr**, **pg_auto_failover** o el servicio administrado (RDS, Cloud SQL, Azure). Este proyecto hace el
-failover **a mano** (lección 06) para ver cada paso. La versión automática es el siguiente proyecto natural.
+failover **a mano** (lección 06) para ver cada paso. Automatizarlo queda fuera del alcance de este proyecto.
 
 | | MongoDB replica set | PostgreSQL streaming replication |
 | --- | --- | --- |
@@ -259,8 +259,8 @@ Las celdas marcadas **Juega aquí** están hechas para cambiarlas.
 Necesita el seed cargado. Hay dos formas de abrirlo:
 
 - **VS Code (Dev Container)**: abre el archivo y elige el kernel de Python 3.13 del contenedor. No usa puertos.
-- **Navegador (JupyterLab)**: el contenedor publica el puerto 8889 solo para esto (no el 8888, para poder
-  usarlo a la vez que el laboratorio de mongodb-vector-embeddings).
+- **Navegador (JupyterLab)**: el contenedor publica el puerto 8889 solo para esto (no el 8888, para no chocar con
+  otro Jupyter que tengas abierto en tu equipo).
 
   ```bash
   docker exec -it PgReplicaLab jupyter lab --ip 0.0.0.0 --port 8889 --no-browser --notebook-dir /app

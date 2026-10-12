@@ -14,7 +14,7 @@ services:
     env_file:
       - ../.envs/postgres.env
     # JupyterLab for notebooks/sandbox.ipynb when not using VS Code (see README).
-    # 8889 instead of 8888 so it can run alongside the mongodb-vector-embeddings lab.
+    # 8889 instead of 8888 to avoid clashing with another local Jupyter on the default port.
     ports:
       - 8889:8889
     working_dir: /app
